@@ -11,12 +11,7 @@
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="eR5-II-EK4">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="4xi-a6-oRH">
-                            <size key="itemSize" width="50" height="50"/>
-                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                            <inset key="sectionInset" minX="0.0" minY="10" maxX="0.0" maxY="0.0"/>
-                        </collectionViewFlowLayout>
+                        <collectionViewLayout key="collectionViewLayout" id="w6C-Ds-zbd" customClass="WJStackCellLayout" customModule="StackCollectionView" customModuleProvider="target"/>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Cell" id="iqG-iD-iEl" customClass="WJStackedCollectionViewCell" customModule="StackCollectionView" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
@@ -35,7 +30,6 @@
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
                                 <constraints>
-                                    <constraint firstAttribute="bottom" secondItem="Xiv-aI-nYa" secondAttribute="bottom" constant="29" id="9Ts-dI-cXU"/>
                                     <constraint firstItem="Xiv-aI-nYa" firstAttribute="top" secondItem="iqG-iD-iEl" secondAttribute="top" id="D0y-H6-iIs"/>
                                     <constraint firstAttribute="trailing" secondItem="Xiv-aI-nYa" secondAttribute="trailing" constant="4" id="LQ0-Ur-qGa"/>
                                     <constraint firstItem="Xiv-aI-nYa" firstAttribute="leading" secondItem="iqG-iD-iEl" secondAttribute="leading" constant="4" id="Vzl-ak-4J2"/>
@@ -50,6 +44,8 @@
                             <outlet property="delegate" destination="whl-zI-rc8" id="QCr-In-jtB"/>
                         </connections>
                     </collectionView>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Klo-I9-7Vn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

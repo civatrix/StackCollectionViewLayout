@@ -10,19 +10,37 @@ import UIKit
 
 class ViewController: UICollectionViewController {
     let colors = [UIColor.redColor(), UIColor.blueColor(), UIColor.greenColor(), UIColor.orangeColor()]
+    var expandedCell = [0,0,0,0]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+    }
+}
+
+extension ViewController: WJCollectionViewDelegateStackLayout {
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, heightForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 75
+    }
+    
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, collapsedHeightForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 21
+    }
+    
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, expandedItemInSection section: Int) -> Int {
+        return self.expandedCell[section]
+    }
+    
+    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        self.expandedCell[indexPath.section] = indexPath.item
         
-        let layout = self.collectionView!.collectionViewLayout as! UICollectionViewFlowLayout
-        layout.estimatedItemSize = CGSize(width: 75, height: 75)
+        collectionView.performBatchUpdates(nil, completion: nil)
     }
 }
 
 extension ViewController: UICollectionViewDataSource {
     override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return 3
+        return 1
     }
     
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

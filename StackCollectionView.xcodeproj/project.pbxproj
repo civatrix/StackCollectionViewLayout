@@ -81,12 +81,12 @@
 		FE4CAD3F1B4723450039927B /* StackCollectionView */ = {
 			isa = PBXGroup;
 			children = (
-				FE4CAD421B4723450039927B /* AppDelegate.swift */,
-				FE4CAD441B4723450039927B /* ViewController.swift */,
-				FE4CAD461B4723450039927B /* Main.storyboard */,
+				FE4CAD401B4723450039927B /* Supporting Files */,
 				FE4CAD491B4723450039927B /* Images.xcassets */,
 				FE4CAD4B1B4723450039927B /* LaunchScreen.xib */,
-				FE4CAD401B4723450039927B /* Supporting Files */,
+				FE4CAD461B4723450039927B /* Main.storyboard */,
+				FE4CAD421B4723450039927B /* AppDelegate.swift */,
+				FE4CAD441B4723450039927B /* ViewController.swift */,
 				FE4CAD621B4723A40039927B /* WJStackCellLayout.swift */,
 				FE4CAD641B4724480039927B /* WJStackedCollectionViewCell.swift */,
 			);
@@ -419,6 +419,7 @@
 				FE4CAD5E1B4723450039927B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		FE4CAD5F1B4723450039927B /* Build configuration list for PBXNativeTarget "StackCollectionViewTests" */ = {
 			isa = XCConfigurationList;
@@ -427,6 +428,7 @@
 				FE4CAD611B4723450039927B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
