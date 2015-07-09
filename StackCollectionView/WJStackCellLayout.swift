@@ -24,61 +24,75 @@ class WJStackCellLayout: UICollectionViewLayout {
         }
     }
     
-    private var itemAttributes:[[UICollectionViewLayoutAttributes]] = []
+    private var _itemAttributes:[[UICollectionViewLayoutAttributes]] = []
+    private var _contentSize = CGSizeZero
     
+    func expandedItemInSection(section:Int) -> Int {
+        if let delegate = self.delegate, collectionView = collectionView {
+            return delegate.collectionView(collectionView, layout: self, expandedItemInSection: section)
+        }
+        
+        return 0
+    }
+
     override func collectionViewContentSize() -> CGSize {
-        return self.collectionView?.bounds.size ?? CGSizeZero
+        return self._contentSize
     }
     
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [AnyObject]? {
-        return self.itemAttributes.flatMap({ $0 })
+        self.calculateLayout()
+        return self._itemAttributes.flatMap({ $0 })
     }
     
     override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes! {
-        if indexPath.section >= self.itemAttributes.count { return nil }
-        let attributes = self.itemAttributes[indexPath.section]
+        self.calculateLayout()
+        
+        if indexPath.section >= self._itemAttributes.count { return nil }
+        let attributes = self._itemAttributes[indexPath.section]
         
         if indexPath.item >= attributes.count { return nil }
         return attributes[indexPath.row]
     }
     
-    override func prepareLayout() {
-        super.prepareLayout()
-        
+    private func calculateLayout() {
         if self.collectionView == nil { return }
         let collectionView = self.collectionView!
         
         if self.delegate == nil { return }
         let delegate = self.delegate!
         
-        self.itemAttributes.removeAll(keepCapacity: true)
+        self._itemAttributes.removeAll(keepCapacity: true)
         
         let numberOfSections = collectionView.numberOfSections()
         let width = collectionView.bounds.size.width - self.sectionInset.left - self.sectionInset.right
         
         var top:CGFloat = 0
         for var section = 0; section < numberOfSections; section++ {
-            self.itemAttributes.append([])
+            self._itemAttributes.append([])
             
             top += self.sectionInset.top
-            let expandedItem = delegate.collectionView(collectionView, layout: self, expandedItemInSection: section)
             
+            let expandedItem = self.expandedItemInSection(section)
             let numberOfItems = collectionView.numberOfItemsInSection(section)
             for var item = 0; item < numberOfItems; item++ {
                 let indexPath = NSIndexPath(forItem: item, inSection: section)
                 
-                let itemHeight:CGFloat
+                let itemHeight = delegate.collectionView(collectionView, layout: self, heightForItemAtIndexPath: indexPath)
+                let verticalAdjustment: CGFloat
                 if expandedItem == item {
-                    itemHeight = delegate.collectionView(collectionView, layout: self, heightForItemAtIndexPath: indexPath)
+                    verticalAdjustment = itemHeight
                 } else {
-                    itemHeight = delegate.collectionView(collectionView, layout: self, collapsedHeightForItemAtIndexPath: indexPath)
+                    verticalAdjustment = delegate.collectionView(collectionView, layout: self, collapsedHeightForItemAtIndexPath: indexPath)
                 }
                 let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
-                attributes.frame = CGRect(x: self.sectionInset.left, y: top, width: width, height: itemHeight)
-                top += itemHeight
+                let horizontalAdjustment = CGFloat(0)//4*CGFloat(numberOfItems-item)
+                attributes.frame = CGRect(x: self.sectionInset.left-horizontalAdjustment*0.5, y: top, width: width+horizontalAdjustment, height: verticalAdjustment)
+                top += verticalAdjustment
                 
-                self.itemAttributes[section].append(attributes)
+                self._itemAttributes[section].append(attributes)
             }
         }
+        
+        self._contentSize = CGSize(width: width, height: top)
     }
 }

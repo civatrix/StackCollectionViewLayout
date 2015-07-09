@@ -9,22 +9,28 @@
 import UIKit
 
 class ViewController: UICollectionViewController {
-    let colors = [UIColor.redColor(), UIColor.blueColor(), UIColor.greenColor(), UIColor.orangeColor()]
+    struct cellInfo {
+        let color: UIColor
+        let text: String
+    }
+    
+    var cells = [cellInfo(color: UIColor.redColor(), text: "Cell 1"), cellInfo(color: UIColor.blueColor(), text: "Cell 2"), cellInfo(color: UIColor.greenColor(), text: "Cell 3"), cellInfo(color: UIColor.orangeColor(), text: "Cell 4")]
     var expandedCell = [0,0,0,0]
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        super.viewDidLoad()        
+        self.collectionView?.draggable = true
+        self.collectionView?.contentInset = UIEdgeInsets(top: 30, left: 0, bottom: 0, right: 0)
     }
 }
 
 extension ViewController: WJCollectionViewDelegateStackLayout {
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, heightForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 75
+        return 100
     }
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, collapsedHeightForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 21
+        return 30
     }
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, expandedItemInSection section: Int) -> Int {
@@ -32,9 +38,15 @@ extension ViewController: WJCollectionViewDelegateStackLayout {
     }
     
     override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        self.expandedCell[indexPath.section] = indexPath.item
-        
-        collectionView.performBatchUpdates(nil, completion: nil)
+        if self.expandedCell[indexPath.section] != indexPath.item {
+            //update to expand selected cell
+            self.expandedCell[indexPath.section] = indexPath.item
+            
+            collectionView.performBatchUpdates(nil, completion: nil)
+            return
+        } else {
+            //expanded cell selected, perform navigation
+        }
     }
 }
 
@@ -49,9 +61,35 @@ extension ViewController: UICollectionViewDataSource {
     
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("Cell", forIndexPath: indexPath) as! WJStackedCollectionViewCell
-        cell.label.text = "Cell \(indexPath.item)"
-        cell.contentView.backgroundColor = colors[indexPath.item]
+        let info = self.cells[indexPath.item]
+        cell.label.text = info.text
+        cell.contentView.backgroundColor = info.color
         
         return cell
+    }
+}
+
+extension ViewController: UICollectionViewDataSource_Draggable {
+    func collectionView(collectionView: UICollectionView, moveItemAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
+        
+        let fromIndex = fromIndexPath.item
+        let toIndex = toIndexPath.item
+        let movingObject = self.cells[fromIndex];
+        
+        self.cells.removeAtIndex(fromIndex)
+        self.cells.insert(movingObject, atIndex: toIndex)
+        
+        NSLog("Moving %ld to %ld", fromIndexPath.item, toIndexPath.item)
+        
+        self.expandedCell[toIndexPath.section] = toIndexPath.item
+    }
+    
+    func collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return true
+    }
+    
+    func collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: NSIndexPath, toIndexPath: NSIndexPath) -> Bool {
+        //items must stay in the same section
+        return indexPath.section == toIndexPath.section
     }
 }

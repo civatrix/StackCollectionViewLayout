@@ -15,6 +15,10 @@
 		FE4CAD591B4723450039927B /* StackCollectionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE4CAD581B4723450039927B /* StackCollectionViewTests.swift */; };
 		FE4CAD631B4723A40039927B /* WJStackCellLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE4CAD621B4723A40039927B /* WJStackCellLayout.swift */; };
 		FE4CAD651B4724480039927B /* WJStackedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE4CAD641B4724480039927B /* WJStackedCollectionViewCell.swift */; };
+		FE4CAD6C1B4AEC580039927B /* UICollectionView+Draggable.m in Sources */ = {isa = PBXBuildFile; fileRef = FE4CAD691B4AEC580039927B /* UICollectionView+Draggable.m */; };
+		FE4CAD721B4AEC9E0039927B /* LSCollectionViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = FE4CAD6F1B4AEC9E0039927B /* LSCollectionViewHelper.m */; };
+		FE4CAD731B4AEC9E0039927B /* LSCollectionViewLayoutHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = FE4CAD711B4AEC9E0039927B /* LSCollectionViewLayoutHelper.m */; };
+		FE4CAD751B4B558F0039927B /* WJDraggableStackCellLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE4CAD741B4B558F0039927B /* WJDraggableStackCellLayout.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +44,16 @@
 		FE4CAD581B4723450039927B /* StackCollectionViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackCollectionViewTests.swift; sourceTree = "<group>"; };
 		FE4CAD621B4723A40039927B /* WJStackCellLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WJStackCellLayout.swift; sourceTree = "<group>"; };
 		FE4CAD641B4724480039927B /* WJStackedCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WJStackedCollectionViewCell.swift; sourceTree = "<group>"; };
+		FE4CAD671B4AEC570039927B /* StackCollectionView-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "StackCollectionView-Bridging-Header.h"; sourceTree = "<group>"; };
+		FE4CAD681B4AEC580039927B /* UICollectionView+Draggable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UICollectionView+Draggable.h"; sourceTree = "<group>"; };
+		FE4CAD691B4AEC580039927B /* UICollectionView+Draggable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UICollectionView+Draggable.m"; sourceTree = "<group>"; };
+		FE4CAD6A1B4AEC580039927B /* UICollectionViewDataSource_Draggable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICollectionViewDataSource_Draggable.h; sourceTree = "<group>"; };
+		FE4CAD6B1B4AEC580039927B /* UICollectionViewLayout_Warpable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICollectionViewLayout_Warpable.h; sourceTree = "<group>"; };
+		FE4CAD6E1B4AEC9E0039927B /* LSCollectionViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSCollectionViewHelper.h; sourceTree = "<group>"; };
+		FE4CAD6F1B4AEC9E0039927B /* LSCollectionViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSCollectionViewHelper.m; sourceTree = "<group>"; };
+		FE4CAD701B4AEC9E0039927B /* LSCollectionViewLayoutHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSCollectionViewLayoutHelper.h; sourceTree = "<group>"; };
+		FE4CAD711B4AEC9E0039927B /* LSCollectionViewLayoutHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSCollectionViewLayoutHelper.m; sourceTree = "<group>"; };
+		FE4CAD741B4B558F0039927B /* WJDraggableStackCellLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WJDraggableStackCellLayout.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,9 +77,11 @@
 		FE4CAD341B4723450039927B = {
 			isa = PBXGroup;
 			children = (
+				FE4CAD6D1B4AEC6F0039927B /* DragNDrop */,
 				FE4CAD3F1B4723450039927B /* StackCollectionView */,
 				FE4CAD551B4723450039927B /* StackCollectionViewTests */,
 				FE4CAD3E1B4723450039927B /* Products */,
+				FE4CAD671B4AEC570039927B /* StackCollectionView-Bridging-Header.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -88,6 +104,7 @@
 				FE4CAD421B4723450039927B /* AppDelegate.swift */,
 				FE4CAD441B4723450039927B /* ViewController.swift */,
 				FE4CAD621B4723A40039927B /* WJStackCellLayout.swift */,
+				FE4CAD741B4B558F0039927B /* WJDraggableStackCellLayout.swift */,
 				FE4CAD641B4724480039927B /* WJStackedCollectionViewCell.swift */,
 			);
 			path = StackCollectionView;
@@ -116,6 +133,21 @@
 				FE4CAD571B4723450039927B /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		FE4CAD6D1B4AEC6F0039927B /* DragNDrop */ = {
+			isa = PBXGroup;
+			children = (
+				FE4CAD6E1B4AEC9E0039927B /* LSCollectionViewHelper.h */,
+				FE4CAD6F1B4AEC9E0039927B /* LSCollectionViewHelper.m */,
+				FE4CAD701B4AEC9E0039927B /* LSCollectionViewLayoutHelper.h */,
+				FE4CAD711B4AEC9E0039927B /* LSCollectionViewLayoutHelper.m */,
+				FE4CAD681B4AEC580039927B /* UICollectionView+Draggable.h */,
+				FE4CAD691B4AEC580039927B /* UICollectionView+Draggable.m */,
+				FE4CAD6A1B4AEC580039927B /* UICollectionViewDataSource_Draggable.h */,
+				FE4CAD6B1B4AEC580039927B /* UICollectionViewLayout_Warpable.h */,
+			);
+			name = DragNDrop;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -219,9 +251,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				FE4CAD451B4723450039927B /* ViewController.swift in Sources */,
+				FE4CAD731B4AEC9E0039927B /* LSCollectionViewLayoutHelper.m in Sources */,
+				FE4CAD751B4B558F0039927B /* WJDraggableStackCellLayout.swift in Sources */,
+				FE4CAD6C1B4AEC580039927B /* UICollectionView+Draggable.m in Sources */,
 				FE4CAD651B4724480039927B /* WJStackedCollectionViewCell.swift in Sources */,
 				FE4CAD431B4723450039927B /* AppDelegate.swift in Sources */,
 				FE4CAD631B4723A40039927B /* WJStackCellLayout.swift in Sources */,
+				FE4CAD721B4AEC9E0039927B /* LSCollectionViewHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -350,9 +386,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = StackCollectionView/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "StackCollectionView-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -360,9 +400,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = StackCollectionView/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "StackCollectionView-Bridging-Header.h";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

@@ -11,7 +11,7 @@
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="eR5-II-EK4">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <collectionViewLayout key="collectionViewLayout" id="w6C-Ds-zbd" customClass="WJStackCellLayout" customModule="StackCollectionView" customModuleProvider="target"/>
+                        <collectionViewLayout key="collectionViewLayout" id="w6C-Ds-zbd" customClass="WJDraggableStackCellLayout" customModule="StackCollectionView" customModuleProvider="target"/>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Cell" id="iqG-iD-iEl" customClass="WJStackedCollectionViewCell" customModule="StackCollectionView" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
@@ -45,7 +45,7 @@
                         </connections>
                     </collectionView>
                     <extendedEdge key="edgesForExtendedLayout" top="YES"/>
-                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
+                    <nil key="simulatedStatusBarMetrics"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Klo-I9-7Vn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
