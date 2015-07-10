@@ -14,13 +14,38 @@ class ViewController: UICollectionViewController {
         let text: String
     }
     
-    var cells = [cellInfo(color: UIColor.redColor(), text: "Cell 1"), cellInfo(color: UIColor.blueColor(), text: "Cell 2"), cellInfo(color: UIColor.greenColor(), text: "Cell 3"), cellInfo(color: UIColor.orangeColor(), text: "Cell 4")]
+    var cells = [[cellInfo(color: UIColor.redColor(), text: "Cell 1"), cellInfo(color: UIColor.blueColor(), text: "Cell 2"), cellInfo(color: UIColor.greenColor(), text: "Cell 3")],[cellInfo(color: UIColor.redColor(), text: "Cell 1"), cellInfo(color: UIColor.blueColor(), text: "Cell 2"), cellInfo(color: UIColor.greenColor(), text: "Cell 3"), cellInfo(color: UIColor.orangeColor(), text: "Cell 4")],[cellInfo(color: UIColor.redColor(), text: "Cell 1"), cellInfo(color: UIColor.blueColor(), text: "Cell 2"), cellInfo(color: UIColor.greenColor(), text: "Cell 3"), cellInfo(color: UIColor.orangeColor(), text: "Cell 4")]]
     var expandedCell = [0,0,0,0]
     
     override func viewDidLoad() {
         super.viewDidLoad()        
         self.collectionView?.draggable = true
         self.collectionView?.contentInset = UIEdgeInsets(top: 30, left: 0, bottom: 0, right: 0)
+    }
+    
+    override func viewWillLayoutSubviews() {
+        self.updateColumnWidthForSize(self.view.bounds.size)
+    }
+    
+    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
+        self.updateColumnWidthForSize(size)
+    }
+    
+    func updateColumnWidthForSize(size: CGSize) {
+        let numberOfColumns:Int
+        if (UI_USER_INTERFACE_IDIOM() == .Phone) {
+            numberOfColumns = 1
+        } else {
+            if (size.width < size.height) {
+                numberOfColumns = 2
+            } else {
+                numberOfColumns = 3
+            }
+        }
+        
+        let layout = self.collectionView!.collectionViewLayout as! WJStackCellLayout
+        layout.columnCount = numberOfColumns
     }
 }
 
@@ -52,16 +77,16 @@ extension ViewController: WJCollectionViewDelegateStackLayout {
 
 extension ViewController: UICollectionViewDataSource {
     override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return 1
+        return self.cells.count
     }
     
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 4
+        return self.cells[section].count
     }
     
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("Cell", forIndexPath: indexPath) as! WJStackedCollectionViewCell
-        let info = self.cells[indexPath.item]
+        let info = self.cells[indexPath.section][indexPath.item]
         cell.label.text = info.text
         cell.contentView.backgroundColor = info.color
         
@@ -74,10 +99,10 @@ extension ViewController: UICollectionViewDataSource_Draggable {
         
         let fromIndex = fromIndexPath.item
         let toIndex = toIndexPath.item
-        let movingObject = self.cells[fromIndex];
+        let movingObject = self.cells[fromIndexPath.section][fromIndex];
         
-        self.cells.removeAtIndex(fromIndex)
-        self.cells.insert(movingObject, atIndex: toIndex)
+        self.cells[fromIndexPath.section].removeAtIndex(fromIndex)
+        self.cells[toIndexPath.section].insert(movingObject, atIndex: toIndex)
         
         NSLog("Moving %ld to %ld", fromIndexPath.item, toIndexPath.item)
         
