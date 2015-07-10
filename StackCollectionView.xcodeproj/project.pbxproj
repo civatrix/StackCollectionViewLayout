@@ -19,6 +19,8 @@
 		FE4CAD721B4AEC9E0039927B /* LSCollectionViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = FE4CAD6F1B4AEC9E0039927B /* LSCollectionViewHelper.m */; };
 		FE4CAD731B4AEC9E0039927B /* LSCollectionViewLayoutHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = FE4CAD711B4AEC9E0039927B /* LSCollectionViewLayoutHelper.m */; };
 		FE4CAD751B4B558F0039927B /* WJDraggableStackCellLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE4CAD741B4B558F0039927B /* WJDraggableStackCellLayout.swift */; };
+		FE4CAD781B507B9E0039927B /* WJHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE4CAD761B507B9E0039927B /* WJHeaderCollectionReusableView.swift */; };
+		FE4CAD791B507B9E0039927B /* WJHeaderCollectionReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = FE4CAD771B507B9E0039927B /* WJHeaderCollectionReusableView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +56,8 @@
 		FE4CAD701B4AEC9E0039927B /* LSCollectionViewLayoutHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSCollectionViewLayoutHelper.h; sourceTree = "<group>"; };
 		FE4CAD711B4AEC9E0039927B /* LSCollectionViewLayoutHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSCollectionViewLayoutHelper.m; sourceTree = "<group>"; };
 		FE4CAD741B4B558F0039927B /* WJDraggableStackCellLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WJDraggableStackCellLayout.swift; sourceTree = "<group>"; };
+		FE4CAD761B507B9E0039927B /* WJHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WJHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
+		FE4CAD771B507B9E0039927B /* WJHeaderCollectionReusableView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WJHeaderCollectionReusableView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +110,8 @@
 				FE4CAD621B4723A40039927B /* WJStackCellLayout.swift */,
 				FE4CAD741B4B558F0039927B /* WJDraggableStackCellLayout.swift */,
 				FE4CAD641B4724480039927B /* WJStackedCollectionViewCell.swift */,
+				FE4CAD761B507B9E0039927B /* WJHeaderCollectionReusableView.swift */,
+				FE4CAD771B507B9E0039927B /* WJHeaderCollectionReusableView.xib */,
 			);
 			path = StackCollectionView;
 			sourceTree = "<group>";
@@ -233,6 +239,7 @@
 				FE4CAD481B4723450039927B /* Main.storyboard in Resources */,
 				FE4CAD4D1B4723450039927B /* LaunchScreen.xib in Resources */,
 				FE4CAD4A1B4723450039927B /* Images.xcassets in Resources */,
+				FE4CAD791B507B9E0039927B /* WJHeaderCollectionReusableView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,6 +259,7 @@
 			files = (
 				FE4CAD451B4723450039927B /* ViewController.swift in Sources */,
 				FE4CAD731B4AEC9E0039927B /* LSCollectionViewLayoutHelper.m in Sources */,
+				FE4CAD781B507B9E0039927B /* WJHeaderCollectionReusableView.swift in Sources */,
 				FE4CAD751B4B558F0039927B /* WJDraggableStackCellLayout.swift in Sources */,
 				FE4CAD6C1B4AEC580039927B /* UICollectionView+Draggable.m in Sources */,
 				FE4CAD651B4724480039927B /* WJStackedCollectionViewCell.swift in Sources */,

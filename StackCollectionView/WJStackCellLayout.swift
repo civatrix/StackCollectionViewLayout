@@ -11,8 +11,9 @@ import UIKit
 protocol WJCollectionViewDelegateStackLayout: NSObjectProtocol {
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, heightForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, collapsedHeightForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, expandedItemInSection section: Int) -> Int
 }
+
+let WJStackCellLayoutHeader = "WJStackCellLayoutHeader"
 
 class WJStackCellLayout: UICollectionViewLayout {
     var columnCount = 1 {
@@ -22,8 +23,9 @@ class WJStackCellLayout: UICollectionViewLayout {
             }
         }
     }
-    var sectionSpacing:CGFloat = 10.0
+    var sectionSpacing: CGFloat = 10.0
     var sectionInset: UIEdgeInsets = UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5)
+    var headerHeight: CGFloat = 400
     weak var delegate: WJCollectionViewDelegateStackLayout? {
         get {
             return self.collectionView?.delegate as? WJCollectionViewDelegateStackLayout
@@ -32,10 +34,11 @@ class WJStackCellLayout: UICollectionViewLayout {
     
     private var _itemAttributes:[[UICollectionViewLayoutAttributes]] = []
     private var _columnHeights:[CGFloat] = []
+    private var _headerAttributes = UICollectionViewLayoutAttributes()
     
     func expandedItemInSection(section:Int) -> Int {
-        if let delegate = self.delegate, collectionView = collectionView {
-            return delegate.collectionView(collectionView, layout: self, expandedItemInSection: section)
+        if let collectionView = collectionView {
+            return collectionView.numberOfItemsInSection(section) - 1
         }
         
         return 0
@@ -49,7 +52,10 @@ class WJStackCellLayout: UICollectionViewLayout {
     
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [AnyObject]? {
         self.calculateLayout()
-        return self._itemAttributes.flatMap({ $0 })
+        var attributes = self._itemAttributes.flatMap({ $0 })
+        attributes.insert(self._headerAttributes, atIndex: 0)
+        
+        return attributes
     }
     
     override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes! {
@@ -62,6 +68,10 @@ class WJStackCellLayout: UICollectionViewLayout {
         return attributes[indexPath.row]
     }
     
+    override func layoutAttributesForSupplementaryViewOfKind(elementKind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes! {
+        return self._headerAttributes
+    }
+    
     private func calculateLayout() {
         if self.collectionView == nil { return }
         let collectionView = self.collectionView!
@@ -70,7 +80,9 @@ class WJStackCellLayout: UICollectionViewLayout {
         let delegate = self.delegate!
         
         self._itemAttributes.removeAll(keepCapacity: true)
-        self._columnHeights = [CGFloat](count: self.columnCount, repeatedValue: self.sectionInset.top)
+        self._headerAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: WJStackCellLayoutHeader, withIndexPath: NSIndexPath(forItem: 0, inSection: 0))
+        self._headerAttributes.frame = CGRect(x: 0, y: 0, width: collectionView.bounds.size.width, height: self.headerHeight)
+        self._columnHeights = [CGFloat](count: self.columnCount, repeatedValue: self.headerHeight + self.sectionInset.top)
         
         let numberOfSections = collectionView.numberOfSections()
         let width = collectionView.bounds.size.width - self.sectionInset.left - self.sectionInset.right
@@ -98,10 +110,11 @@ class WJStackCellLayout: UICollectionViewLayout {
                 }
                 let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
                 let horizontalAdjustment = CGFloat(0)//4*CGFloat(numberOfItems-item)
-                attributes.frame = CGRect(x: xOffset-horizontalAdjustment*0.5, y: yOffset, width: itemWidth+horizontalAdjustment, height: verticalAdjustment)
+                attributes.frame = CGRect(x: xOffset-horizontalAdjustment*0.5, y: yOffset, width: itemWidth+horizontalAdjustment, height: itemHeight)
+                attributes.zIndex = item
                 
                 self._itemAttributes[section].append(attributes)
-                self._columnHeights[columnIndex] = CGRectGetMaxY(attributes.frame)
+                self._columnHeights[columnIndex] += verticalAdjustment
             }
             self._columnHeights[columnIndex] += self.sectionInset.bottom
         }
