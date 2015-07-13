@@ -265,13 +265,13 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
                 UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
                 cell.highlighted = NO;
                 [mockCell removeFromSuperview];
-                mockCell = [cell snapshotViewAfterScreenUpdates:YES];
+                //mockCell = [cell snapshotViewAfterScreenUpdates:YES];
                 mockCell.frame = cell.frame;
-                mockCell.center = CGPointMake(cell.center.x, [sender locationInView:self.collectionView].y);
+                //mockCell.center = CGPointMake(cell.center.x, [sender locationInView:self.collectionView].y);
                 mockCenter = mockCell.center;
-                [self.collectionView addSubview:mockCell];
+                //[self.collectionView insertSubview:mockCell aboveSubview:cell];
                 [UIView animateWithDuration:0.3 animations:^{
-                    mockCell.transform = CGAffineTransformMakeScale(0.9f, 0.9f);
+                    //cell.transform = CGAffineTransformMakeScale(1.f, 1.f);
                 } completion:nil];
             }];
             
@@ -350,6 +350,9 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
         id<LSCollectionViewDraggableDelegate> delegate = (id<LSCollectionViewDraggableDelegate>)layout;
         [delegate willMoveDraggingItemToIndexPath:indexPath];
     }
+    UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
+    [self.collectionView insertSubview:mockCell aboveSubview:cell];
+    
     [self.collectionView performBatchUpdates:^{
         self.layoutHelper.hideIndexPath = indexPath;
         self.layoutHelper.toIndexPath = indexPath;

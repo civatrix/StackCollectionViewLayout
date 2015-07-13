@@ -43,7 +43,7 @@
             return attributes;
         }
         if ([attributes.indexPath isEqual:hideIndexPath]) {
-            attributes.hidden = YES;
+            attributes.transform = CGAffineTransformMakeScale(1.05, 1.05);
         }
         return attributes;
     }
@@ -66,7 +66,7 @@
     }
     NSIndexPath *indexPath = attributes.indexPath;
     if ([indexPath isEqual:hideIndexPath]) {
-        attributes.hidden = YES;
+        attributes.transform = CGAffineTransformMakeScale(1.05, 1.05);
     }
     
     if([indexPath isEqual:toIndexPath]) {

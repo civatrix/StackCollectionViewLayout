@@ -54,7 +54,6 @@ class WJStackCellLayout: UICollectionViewLayout {
         self.calculateLayout()
         var attributes = self._itemAttributes.flatMap({ $0 })
         attributes.insert(self._headerAttributes, atIndex: 0)
-        
         return attributes
     }
     
