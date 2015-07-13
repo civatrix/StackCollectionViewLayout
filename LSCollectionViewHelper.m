@@ -155,63 +155,71 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
 - (NSIndexPath *)indexPathForItemClosestToPoint:(CGPoint)point {
     NSArray *layoutAttrsInRect;
     NSInteger closestDist = NSIntegerMax;
-    NSInteger highestZIndex = 0;
-    NSIndexPath *indexPath;
+    UICollectionViewLayoutAttributes *closestAttributes;
     NSIndexPath *toIndexPath = self.layoutHelper.toIndexPath;
     
     // We need original positions of cells
     self.layoutHelper.toIndexPath = nil;
     layoutAttrsInRect = [self.collectionView.collectionViewLayout layoutAttributesForElementsInRect:self.collectionView.bounds];
+    NSArray *intersectingAttrs = [layoutAttrsInRect filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(UICollectionViewLayoutAttributes *evaluatedObject, NSDictionary *bindings) {
+        return CGRectContainsPoint(evaluatedObject.frame, point);
+    }]];
     self.layoutHelper.toIndexPath = toIndexPath;
     
     // What cell are we closest to?
     for (UICollectionViewLayoutAttributes *layoutAttr in layoutAttrsInRect) {
-        if (CGRectContainsPoint(layoutAttr.frame, point) && layoutAttr.zIndex > highestZIndex) {
-            highestZIndex = layoutAttr.zIndex;
-            indexPath = layoutAttr.indexPath;
-        }
-        
-//        CGFloat xd = layoutAttr.center.x - point.x;
-//        CGFloat yd = layoutAttr.center.y - point.y;
-//        NSInteger dist = sqrtf(xd*xd + yd*yd);
-//        if (dist < closestDist) {
-//            if (dist < 2) { continue; }
-//            closestDist = dist;
+//        if (CGRectContainsPoint(layoutAttr.frame, point) && layoutAttr.zIndex > highestZIndex) {
+//            highestZIndex = layoutAttr.zIndex;
 //            indexPath = layoutAttr.indexPath;
 //        }
+        
+        CGFloat xd = layoutAttr.center.x - point.x;
+        CGFloat yd = layoutAttr.center.y - point.y;
+        NSInteger dist = sqrtf(xd*xd + yd*yd);
+        if (dist < closestDist) {
+            closestDist = dist;
+            closestAttributes = layoutAttr;
+        }
     }
     
     // Are we closer to being the last cell in a different section?
-//    NSInteger sections = [self.collectionView numberOfSections];
-//    for (NSInteger i = 0; i < sections; ++i) {
-//        if (i == self.layoutHelper.fromIndexPath.section) {
-//            continue;
-//        }
-//        NSInteger items = [self.collectionView numberOfItemsInSection:i];
-//        NSIndexPath *nextIndexPath = [NSIndexPath indexPathForItem:items inSection:i];
-//        UICollectionViewLayoutAttributes *layoutAttr;
-//        CGFloat xd, yd;
-//        
-//        if (items > 0) {
-//            layoutAttr = [self.collectionView.collectionViewLayout layoutAttributesForItemAtIndexPath:nextIndexPath];
-//            xd = layoutAttr.center.x - point.x;
-//            yd = layoutAttr.center.y - point.y;
-//        } else {
-//            // Trying to use layoutAttributesForItemAtIndexPath while section is empty causes EXC_ARITHMETIC (division by zero items)
-//            // So we're going to ask for the header instead. It doesn't have to exist.
-//            layoutAttr = [self.collectionView.collectionViewLayout layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader atIndexPath:nextIndexPath];
-//            xd = layoutAttr.frame.origin.x - point.x;
-//            yd = layoutAttr.frame.origin.y - point.y;
-//        }
-//        
-//        NSInteger dist = sqrtf(xd*xd + yd*yd);
-//        if (dist < closestDist) {
-//            closestDist = dist;
-//            indexPath = layoutAttr.indexPath;
-//        }
-//    }
+    NSInteger sections = [self.collectionView numberOfSections];
+    for (NSInteger i = 0; i < sections; ++i) {
+        if (i == self.layoutHelper.fromIndexPath.section) {
+            continue;
+        }
+        NSInteger items = [self.collectionView numberOfItemsInSection:i];
+        NSIndexPath *nextIndexPath = [NSIndexPath indexPathForItem:items inSection:i];
+        UICollectionViewLayoutAttributes *layoutAttr;
+        CGFloat xd, yd;
+        
+        if (items > 0) {
+            layoutAttr = [self.collectionView.collectionViewLayout layoutAttributesForItemAtIndexPath:nextIndexPath];
+            xd = layoutAttr.center.x - point.x;
+            yd = layoutAttr.center.y - point.y;
+        } else {
+            // Trying to use layoutAttributesForItemAtIndexPath while section is empty causes EXC_ARITHMETIC (division by zero items)
+            // So we're going to ask for the header instead. It doesn't have to exist.
+            layoutAttr = [self.collectionView.collectionViewLayout layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader atIndexPath:nextIndexPath];
+            xd = layoutAttr.frame.origin.x - point.x;
+            yd = layoutAttr.frame.origin.y - point.y;
+        }
+        
+        NSInteger dist = sqrtf(xd*xd + yd*yd);
+        if (dist < closestDist) {
+            closestDist = dist;
+            closestAttributes = layoutAttr;
+        }
+    }
     
-    return indexPath;
+    //Now ensure we get the view that is visible to the user at that point
+    for (UICollectionViewLayoutAttributes *layoutAttrs in intersectingAttrs) {
+        if (layoutAttrs.zIndex > closestAttributes.zIndex) {
+            closestAttributes = layoutAttrs;
+        }
+    }
+    
+    return closestAttributes.indexPath;
 }
 
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
