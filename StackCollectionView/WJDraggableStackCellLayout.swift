@@ -15,9 +15,9 @@ class WJDraggableStackCellLayout: WJStackCellLayout, UICollectionViewLayout_Warp
 //    private var _draggingItem:NSIndexPath? = nil
     
     override func expandedItemInSection(section: Int) -> Int {
-        if self._draggingItem && self._draggingSection == section {
-            return -1
-        }
+//        if self._draggingItem && self._draggingSection == section {
+//            return -1
+//        }
         
 //        if let draggingItem = self._draggingItem where draggingItem.section == section {
 //            return draggingItem.item
