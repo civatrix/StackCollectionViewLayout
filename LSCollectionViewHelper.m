@@ -263,7 +263,7 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
                 mockCenter = mockCell.center;
                 [self.collectionView addSubview:mockCell];
                 [UIView animateWithDuration:0.3 animations:^{
-                    mockCell.transform = CGAffineTransformMakeScale(1.1f, 1.1f);
+                    mockCell.transform = CGAffineTransformMakeScale(0.9f, 0.9f);
                 } completion:nil];
             }];
             
