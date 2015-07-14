@@ -19,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, readonly) UICollectionViewLayout<UICollectionViewLayout_Warpable> *collectionViewLayout;
 @property (nullable, strong, nonatomic) NSIndexPath *fromIndexPath;
 @property (nullable, strong, nonatomic) NSIndexPath *toIndexPath;
-@property (nullable, strong, nonatomic) NSIndexPath *hideIndexPath;
 NS_ASSUME_NONNULL_END
 
 @end

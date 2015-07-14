@@ -33,17 +33,10 @@
     UICollectionView *collectionView = self.collectionViewLayout.collectionView;
     NSIndexPath *fromIndexPath = self.fromIndexPath;
     NSIndexPath *toIndexPath = self.toIndexPath;
-    NSIndexPath *hideIndexPath = self.hideIndexPath;
     NSIndexPath *indexPathToRemove;
     
     if (toIndexPath == nil) {
-        if (hideIndexPath == nil || attributes.representedElementCategory != UICollectionElementCategoryCell) {
-            //No changes needed
-            return attributes;
-        }
-        if ([attributes.indexPath isEqual:hideIndexPath]) {
-            attributes.transform = CGAffineTransformMakeScale(1.05, 1.05);
-        }
+        //No changes needed
         return attributes;
     }
     
@@ -64,21 +57,13 @@
         }
     }
     NSIndexPath *indexPath = attributes.indexPath;
-    if ([indexPath isEqual:hideIndexPath]) {
+    if ([indexPath isEqual:toIndexPath]) {
         attributes.transform = CGAffineTransformMakeScale(1.05, 1.05);
     }
     
     if([indexPath isEqual:toIndexPath]) {
         // Item's new location
         attributes.indexPath = fromIndexPath;
-    } else if(fromIndexPath.section != toIndexPath.section) {
-        if(indexPath.section == fromIndexPath.section && indexPath.item >= fromIndexPath.item) {
-            // Change indexes in source section
-            attributes.indexPath = [NSIndexPath indexPathForItem:indexPath.item + 1 inSection:indexPath.section];
-        } else if(indexPath.section == toIndexPath.section && indexPath.item >= toIndexPath.item) {
-            // Change indexes in destination section
-            attributes.indexPath = [NSIndexPath indexPathForItem:indexPath.item - 1 inSection:indexPath.section];
-        }
     } else if(indexPath.section == fromIndexPath.section) {
         if(indexPath.item <= fromIndexPath.item && indexPath.item > toIndexPath.item) {
             // Item moved back

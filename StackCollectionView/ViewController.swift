@@ -13,14 +13,14 @@ class ViewController: UICollectionViewController {
         let color: UIColor
         let text: String
     }
-    var colors = [cellInfo(color: UIColor.redColor(), text: "Cell 1"), cellInfo(color: UIColor.blueColor(), text: "Cell 2"), cellInfo(color: UIColor.greenColor(), text: "Cell 3"), cellInfo(color: UIColor.orangeColor(), text: "Cell 4"), cellInfo(color: UIColor.purpleColor(), text: "Cell 5"), cellInfo(color: UIColor.cyanColor(), text: "Cell 6"), cellInfo(color: UIColor.yellowColor(), text: "Cell 7")]
+    var colors = [cellInfo(color: UIColor.redColor(), text: "Cell 1"), cellInfo(color: UIColor.blueColor(), text: "Cell 2"), cellInfo(color: UIColor.greenColor(), text: "Cell 3"), cellInfo(color: UIColor.orangeColor(), text: "Cell 4"), cellInfo(color: UIColor.purpleColor(), text: "Cell 5"), cellInfo(color: UIColor.cyanColor(), text: "Cell 6"), cellInfo(color: UIColor.lightGrayColor(), text: "Cell 7")]
     
     var cells:[[cellInfo]] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.cells = [self.colors];
+        self.cells = [self.colors, self.colors, self.colors, self.colors];
         
         self.collectionView?.draggable = true
         self.collectionView?.registerNib(UINib(nibName: "WJHeaderCollectionReusableView", bundle: nil), forSupplementaryViewOfKind: WJStackCellLayoutHeader, withReuseIdentifier: "Header")
@@ -60,8 +60,6 @@ class ViewController: UICollectionViewController {
         self.cells[toIndexPath.section].insert(movingObject, atIndex: toIndex)
         
         self.collectionView?.moveItemAtIndexPath(fromIndexPath, toIndexPath: toIndexPath)
-        
-        NSLog("Moving %ld to %ld", fromIndexPath.item, toIndexPath.item)
     }
 }
 
@@ -70,18 +68,18 @@ extension ViewController: WJCollectionViewDelegateStackLayout {
         return 100
     }
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, collapsedHeightForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, verticalOffsetForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         return 30
     }
     
     override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         let numberOfItemsInSection = self.cells[indexPath.section].count
         if numberOfItemsInSection != indexPath.item {
-            //update to expand selected cell and move to bottom
+            //update to move selected cell to bottom
             self.moveItemAtIndexPath(indexPath, toIndexPath: NSIndexPath(forItem: numberOfItemsInSection-1, inSection: indexPath.section))
             return
         } else {
-            //expanded cell selected, perform navigation
+            //bottom cell selected, perform navigation
         }
     }
 }
@@ -112,10 +110,6 @@ extension ViewController: UICollectionViewDataSource {
 extension ViewController: UICollectionViewDataSource_Draggable {
     func collectionView(collectionView: UICollectionView, moveItemAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
         self.moveItemAtIndexPath(fromIndexPath, toIndexPath: toIndexPath)
-    }
-    
-    func collectionView(collectionView: UICollectionView, didMoveItemAtIndexPath indexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-        //collectionView.reloadData()
     }
     
     func collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: NSIndexPath) -> Bool {

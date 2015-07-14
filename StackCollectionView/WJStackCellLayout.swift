@@ -10,7 +10,7 @@ import UIKit
 
 protocol WJCollectionViewDelegateStackLayout: NSObjectProtocol {
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, heightForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, collapsedHeightForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, verticalOffsetForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat
 }
 
 let WJStackCellLayoutHeader = "WJStackCellLayoutHeader"
@@ -23,18 +23,36 @@ class WJStackCellLayout: UICollectionViewLayout {
             }
         }
     }
-    var sectionSpacing: CGFloat = 10.0
-    var sectionInset: UIEdgeInsets = UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5)
-    var headerHeight: CGFloat = 400
+    var sectionSpacing: CGFloat = 10.0 {
+        didSet {
+            if sectionSpacing != oldValue {
+                self.invalidateLayout()
+            }
+        }
+    }
+    var sectionInset: UIEdgeInsets = UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5){
+        didSet {
+            if !UIEdgeInsetsEqualToEdgeInsets(sectionInset, oldValue) {
+                self.invalidateLayout()
+            }
+        }
+    }
+    var headerHeight: CGFloat = 400{
+        didSet {
+            if headerHeight != oldValue {
+                self.invalidateLayout()
+            }
+        }
+    }
     weak var delegate: WJCollectionViewDelegateStackLayout? {
         get {
             return self.collectionView?.delegate as? WJCollectionViewDelegateStackLayout
         }
     }
     
-    private var _itemAttributes:[[UICollectionViewLayoutAttributes]] = []
-    private var _columnHeights:[CGFloat] = []
-    private var _headerAttributes = UICollectionViewLayoutAttributes()
+    private var itemAttributes:[[UICollectionViewLayoutAttributes]] = []
+    private var columnHeights:[CGFloat] = []
+    private var headerAttributes = UICollectionViewLayoutAttributes()
     
     func expandedItemInSection(section:Int) -> Int {
         if let collectionView = collectionView {
@@ -45,30 +63,30 @@ class WJStackCellLayout: UICollectionViewLayout {
     }
 
     override func collectionViewContentSize() -> CGSize {
-        let height = self._columnHeights.reduce(CGFloat.min, combine: { max($0, $1) })
+        let height = self.columnHeights.reduce(CGFloat.min, combine: { max($0, $1) })
         let width = self.collectionView?.bounds.size.width ?? CGFloat(0)
         return CGSize(width:width , height: height)
     }
     
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [AnyObject]? {
         self.calculateLayout()
-        var attributes = self._itemAttributes.flatMap({ $0 })
-        attributes.insert(self._headerAttributes, atIndex: 0)
+        var attributes = self.itemAttributes.flatMap({ $0 })
+        attributes.insert(self.headerAttributes, atIndex: 0)
         return attributes
     }
     
     override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes! {
         self.calculateLayout()
         
-        if indexPath.section >= self._itemAttributes.count { return nil }
-        let attributes = self._itemAttributes[indexPath.section]
+        if indexPath.section >= self.itemAttributes.count { return nil }
+        let attributes = self.itemAttributes[indexPath.section]
         
         if indexPath.item >= attributes.count { return nil }
         return attributes[indexPath.row]
     }
     
     override func layoutAttributesForSupplementaryViewOfKind(elementKind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes! {
-        return self._headerAttributes
+        return self.headerAttributes
     }
     
     private func calculateLayout() {
@@ -78,53 +96,50 @@ class WJStackCellLayout: UICollectionViewLayout {
         if self.delegate == nil { return }
         let delegate = self.delegate!
         
-        NSLog("Calculating")
-        
-        self._itemAttributes.removeAll(keepCapacity: true)
-        self._headerAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: WJStackCellLayoutHeader, withIndexPath: NSIndexPath(forItem: 0, inSection: 0))
-        self._headerAttributes.frame = CGRect(x: 0, y: 0, width: collectionView.bounds.size.width, height: self.headerHeight)
-        self._columnHeights = [CGFloat](count: self.columnCount, repeatedValue: self.headerHeight + self.sectionInset.top)
+        self.itemAttributes.removeAll(keepCapacity: true)
+        self.headerAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: WJStackCellLayoutHeader, withIndexPath: NSIndexPath(forItem: 0, inSection: 0))
+        self.headerAttributes.frame = CGRect(x: 0, y: 0, width: collectionView.bounds.size.width, height: self.headerHeight)
+        self.columnHeights = [CGFloat](count: self.columnCount, repeatedValue: self.headerHeight + self.sectionInset.top)
         
         let numberOfSections = collectionView.numberOfSections()
         let width = collectionView.bounds.size.width - self.sectionInset.left - self.sectionInset.right
-        let itemWidth = floor((width - (CGFloat(self.columnCount - 1) * 10)) / CGFloat(self.columnCount))
+        let itemWidth = floor((width - (CGFloat(self.columnCount - 1) * self.sectionSpacing)) / CGFloat(self.columnCount))
         
         var top:CGFloat = 0
         for var section = 0; section < numberOfSections; section++ {
-            self._itemAttributes.append([])
+            self.itemAttributes.append([])
             
-            let expandedItem = self.expandedItemInSection(section)
             let numberOfItems = collectionView.numberOfItemsInSection(section)
+            let expandedItem = numberOfItems - 1
             let columnIndex = self.shortestColumn()
             for var item = 0; item < numberOfItems; item++ {
                 let indexPath = NSIndexPath(forItem: item, inSection: section)
                 
                 let itemHeight = delegate.collectionView(collectionView, layout: self, heightForItemAtIndexPath: indexPath)
-                let xOffset = self.sectionInset.left + (itemWidth+10) * CGFloat(columnIndex)
-                let yOffset = self._columnHeights[columnIndex]
+                let xOffset = self.sectionInset.left + (itemWidth+self.sectionSpacing) * CGFloat(columnIndex)
+                let yOffset = self.columnHeights[columnIndex]
                 
                 let verticalAdjustment: CGFloat
                 if expandedItem == item {
                     verticalAdjustment = itemHeight
                 } else {
-                    verticalAdjustment = delegate.collectionView(collectionView, layout: self, collapsedHeightForItemAtIndexPath: indexPath)
+                    verticalAdjustment = delegate.collectionView(collectionView, layout: self, verticalOffsetForItemAtIndexPath: indexPath)
                 }
                 let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
-                let horizontalAdjustment = 2*CGFloat(0)
-                attributes.frame = CGRect(x: xOffset-horizontalAdjustment*0.5, y: yOffset, width: itemWidth+horizontalAdjustment, height: itemHeight)
+                attributes.frame = CGRect(x: xOffset, y: yOffset, width: itemWidth, height: itemHeight)
                 attributes.zIndex = item
                 
-                self._itemAttributes[section].append(attributes)
-                self._columnHeights[columnIndex] += verticalAdjustment
+                self.itemAttributes[section].append(attributes)
+                self.columnHeights[columnIndex] += verticalAdjustment
             }
-            self._columnHeights[columnIndex] += self.sectionInset.bottom
+            self.columnHeights[columnIndex] += self.sectionInset.bottom
         }
     }
     
     private func shortestColumn() -> Int {
         var shortestIndex = 0
         var shortestHeight = CGFloat.max
-        for (index, height) in enumerate(self._columnHeights) {
+        for (index, height) in enumerate(self.columnHeights) {
             if height < shortestHeight {
                 shortestHeight = height
                 shortestIndex = index
