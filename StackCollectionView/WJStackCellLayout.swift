@@ -78,6 +78,8 @@ class WJStackCellLayout: UICollectionViewLayout {
         if self.delegate == nil { return }
         let delegate = self.delegate!
         
+        NSLog("Calculating")
+        
         self._itemAttributes.removeAll(keepCapacity: true)
         self._headerAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: WJStackCellLayoutHeader, withIndexPath: NSIndexPath(forItem: 0, inSection: 0))
         self._headerAttributes.frame = CGRect(x: 0, y: 0, width: collectionView.bounds.size.width, height: self.headerHeight)
@@ -108,7 +110,7 @@ class WJStackCellLayout: UICollectionViewLayout {
                     verticalAdjustment = delegate.collectionView(collectionView, layout: self, collapsedHeightForItemAtIndexPath: indexPath)
                 }
                 let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
-                let horizontalAdjustment = CGFloat(0)//4*CGFloat(numberOfItems-item)
+                let horizontalAdjustment = 2*CGFloat(0)
                 attributes.frame = CGRect(x: xOffset-horizontalAdjustment*0.5, y: yOffset, width: itemWidth+horizontalAdjustment, height: itemHeight)
                 attributes.zIndex = item
                 

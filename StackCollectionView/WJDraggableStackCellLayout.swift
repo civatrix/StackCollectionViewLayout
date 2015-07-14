@@ -10,21 +10,6 @@ import UIKit
 
 class WJDraggableStackCellLayout: WJStackCellLayout, UICollectionViewLayout_Warpable {
     var layoutHelper = LSCollectionViewLayoutHelper()
-    private var _draggingItem = false
-    private var _draggingSection = -1
-//    private var _draggingItem:NSIndexPath? = nil
-    
-    override func expandedItemInSection(section: Int) -> Int {
-//        if self._draggingItem && self._draggingSection == section {
-//            return -1
-//        }
-        
-//        if let draggingItem = self._draggingItem where draggingItem.section == section {
-//            return draggingItem.item
-//        }
-        
-        return super.expandedItemInSection(section)
-    }
     
     override init() {
         super.init()
@@ -53,22 +38,4 @@ class WJDraggableStackCellLayout: WJStackCellLayout, UICollectionViewLayout_Warp
         
         return nil
     }
-}
-
-extension WJDraggableStackCellLayout: LSCollectionViewDraggableDelegate {
-    func willStartDraggingItemAtIndexPath(indexPath: NSIndexPath) {
-        self._draggingItem = true
-        self._draggingSection = indexPath.section
-//        self._draggingItem = indexPath
-    }
-    
-    func willEndDraggingItemAtIndexPath(indexPath: NSIndexPath) {
-        self._draggingItem = false
-        self._draggingSection = -1
-//        self._draggingItem = nil
-    }
-    
-//    func willMoveDraggingItemToIndexPath(indexPath: NSIndexPath) {
-//        self._draggingItem = indexPath
-//    }
 }

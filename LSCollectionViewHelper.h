@@ -6,17 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol LSCollectionViewDraggableDelegate <NSObject>
-
-NS_ASSUME_NONNULL_BEGIN
-@optional
-- (void)willStartDraggingItemAtIndexPath:(NSIndexPath *)indexPath;
-- (void)willEndDraggingItemAtIndexPath:(NSIndexPath *)indexPath;
-- (void)willMoveDraggingItemToIndexPath:(NSIndexPath *)indexPath;
-NS_ASSUME_NONNULL_END
-
-@end
-
 @interface LSCollectionViewHelper : NSObject <UIGestureRecognizerDelegate>
 
 NS_ASSUME_NONNULL_BEGIN

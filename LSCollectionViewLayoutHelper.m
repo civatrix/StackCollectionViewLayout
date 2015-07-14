@@ -12,8 +12,7 @@
 
 @implementation LSCollectionViewLayoutHelper
 
-- (id)initWithCollectionViewLayout:(UICollectionViewLayout<UICollectionViewLayout_Warpable>*)collectionViewLayout
-{
+- (id)initWithCollectionViewLayout:(UICollectionViewLayout<UICollectionViewLayout_Warpable>*)collectionViewLayout {
     self = [super init];
     if (self) {
         _collectionViewLayout = collectionViewLayout;

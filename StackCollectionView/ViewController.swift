@@ -13,11 +13,15 @@ class ViewController: UICollectionViewController {
         let color: UIColor
         let text: String
     }
+    var colors = [cellInfo(color: UIColor.redColor(), text: "Cell 1"), cellInfo(color: UIColor.blueColor(), text: "Cell 2"), cellInfo(color: UIColor.greenColor(), text: "Cell 3"), cellInfo(color: UIColor.orangeColor(), text: "Cell 4"), cellInfo(color: UIColor.purpleColor(), text: "Cell 5"), cellInfo(color: UIColor.cyanColor(), text: "Cell 6"), cellInfo(color: UIColor.yellowColor(), text: "Cell 7")]
     
-    var cells = [[cellInfo(color: UIColor.redColor(), text: "Cell 1"), cellInfo(color: UIColor.blueColor(), text: "Cell 2"), cellInfo(color: UIColor.greenColor(), text: "Cell 3")],[cellInfo(color: UIColor.redColor(), text: "Cell 1"), cellInfo(color: UIColor.blueColor(), text: "Cell 2"), cellInfo(color: UIColor.greenColor(), text: "Cell 3"), cellInfo(color: UIColor.orangeColor(), text: "Cell 4")],[cellInfo(color: UIColor.redColor(), text: "Cell 1"), cellInfo(color: UIColor.blueColor(), text: "Cell 2"), cellInfo(color: UIColor.greenColor(), text: "Cell 3"), cellInfo(color: UIColor.orangeColor(), text: "Cell 4")]]
+    var cells:[[cellInfo]] = []
     
     override func viewDidLoad() {
-        super.viewDidLoad()        
+        super.viewDidLoad()
+        
+        self.cells = [self.colors];
+        
         self.collectionView?.draggable = true
         self.collectionView?.registerNib(UINib(nibName: "WJHeaderCollectionReusableView", bundle: nil), forSupplementaryViewOfKind: WJStackCellLayoutHeader, withReuseIdentifier: "Header")
     }
@@ -108,6 +112,10 @@ extension ViewController: UICollectionViewDataSource {
 extension ViewController: UICollectionViewDataSource_Draggable {
     func collectionView(collectionView: UICollectionView, moveItemAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
         self.moveItemAtIndexPath(fromIndexPath, toIndexPath: toIndexPath)
+    }
+    
+    func collectionView(collectionView: UICollectionView, didMoveItemAtIndexPath indexPath: NSIndexPath, toIndexPath: NSIndexPath) {
+        //collectionView.reloadData()
     }
     
     func collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: NSIndexPath) -> Bool {
