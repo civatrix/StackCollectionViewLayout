@@ -33,22 +33,30 @@ class ViewController: UICollectionViewController {
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
         self.updateColumnWidthForSize(size)
+        //have to invalidate the first time for header size update
+        self.collectionView?.collectionViewLayout.invalidateLayout()
+        
+        coordinator.animateAlongsideTransition({ (_) -> Void in
+            //invalidate the second time to animate column position changes
+            self.collectionView?.collectionViewLayout.invalidateLayout()
+        }, completion: { (_) -> Void in
+        })
     }
     
     func updateColumnWidthForSize(size: CGSize) {
         let numberOfColumns:Int
+        let itemWidth:CGFloat
         if (UI_USER_INTERFACE_IDIOM() == .Phone) {
             numberOfColumns = 1
+            itemWidth = 0
         } else {
-            if (size.width < size.height) {
-                numberOfColumns = 2
-            } else {
-                numberOfColumns = 3
-            }
+            numberOfColumns = 2
+            itemWidth = 320
         }
         
-        let layout = self.collectionView!.collectionViewLayout as! WJStackCellLayout
-        layout.columnCount = numberOfColumns
+        let layout = self.collectionView?.collectionViewLayout as? WJStackCellLayout
+        layout?.columnCount = numberOfColumns
+        layout?.itemWidth = itemWidth
     }
     
     func moveItemAtIndexPath(fromIndexPath:NSIndexPath, toIndexPath:NSIndexPath) {

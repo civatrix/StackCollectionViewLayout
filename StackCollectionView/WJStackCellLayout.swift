@@ -30,13 +30,25 @@ class WJStackCellLayout: UICollectionViewLayout {
             }
         }
     }
-    var sectionInset: UIEdgeInsets = UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5){
+    var contentInset: UIEdgeInsets = UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5){
         didSet {
-            if !UIEdgeInsetsEqualToEdgeInsets(sectionInset, oldValue) {
+            if !UIEdgeInsetsEqualToEdgeInsets(contentInset, oldValue) {
                 self.invalidateLayout()
             }
         }
     }
+    var itemWidth: CGFloat {
+        get {
+            return _itemWidth
+        }
+        set {
+            if (_itemWidth != newValue) && (self.columnCount > 1) {
+                _itemWidth = newValue
+                self.invalidateLayout()
+            }
+        }
+    }
+    private var _itemWidth: CGFloat = 310
     var headerHeight: CGFloat = 400{
         didSet {
             if headerHeight != oldValue {
@@ -53,6 +65,7 @@ class WJStackCellLayout: UICollectionViewLayout {
     private var itemAttributes:[[UICollectionViewLayoutAttributes]] = []
     private var columnHeights:[CGFloat] = []
     private var headerAttributes = UICollectionViewLayoutAttributes()
+    private var xOffsets:[CGFloat] = []
     
     func expandedItemInSection(section:Int) -> Int {
         if let collectionView = collectionView {
@@ -89,6 +102,60 @@ class WJStackCellLayout: UICollectionViewLayout {
         return self.headerAttributes
     }
     
+    override func invalidateLayout() {
+        self.calculateXOffsets()
+        super.invalidateLayout()
+    }
+    
+    func calculateXOffsets() {
+        if self.collectionView == nil { return }
+        let collectionView = self.collectionView!
+        
+        self.xOffsets = [CGFloat](count: self.columnCount, repeatedValue: 0)
+        let spacing = self.sectionSpacing
+        let width = collectionView.bounds.size.width - self.contentInset.left - self.contentInset.right
+        let halfWidth = width / 2.0
+        let itemWidth = self.itemWidth
+        if self.columnCount == 1 {
+            xOffsets[0] = 0
+            self._itemWidth = width
+        } else if self.columnCount % 2 == 0 {
+            let midColumn = self.columnCount / 2
+            
+            //calculate offsets for columns right of center
+            for var column = midColumn; column < self.columnCount; column++ {
+                let adjustedColumn = CGFloat(column - midColumn)
+                xOffsets[column] = halfWidth + (spacing * (adjustedColumn + 0.5)) + (itemWidth * adjustedColumn)
+            }
+            
+            //calculate offsets for columns left of center
+            for var column = midColumn - 1; column >= 0; column-- {
+                let adjustedColumn = CGFloat(midColumn - column - 1)
+                xOffsets[column] = halfWidth - (spacing * (adjustedColumn + 0.5)) - (itemWidth * (adjustedColumn + 1))
+            }
+        } else {
+            let midColumn = (self.columnCount-1) / 2
+            let halfItemWidth = itemWidth / 2.0
+            
+            xOffsets[midColumn] = halfWidth - halfItemWidth
+            
+            //calculate offsets for columns right of center
+            for var column = midColumn + 1; column < self.columnCount; column++ {
+                let adjustedColumn = CGFloat(column - midColumn)
+                xOffsets[column] = halfWidth + halfItemWidth + (spacing * adjustedColumn) + (itemWidth * (adjustedColumn - 1))
+            }
+            
+            //calculate offsets for columns left of center
+            for var column = midColumn - 1; column >= 0; column-- {
+                let adjustedColumn = CGFloat(midColumn - column)
+                xOffsets[column] = halfWidth - halfItemWidth - (spacing * adjustedColumn) - (itemWidth * adjustedColumn)
+            }
+        }
+        
+        //offset all offsets by content inset
+        xOffsets = xOffsets.map { $0 + self.contentInset.left }
+    }
+    
     private func calculateLayout() {
         if self.collectionView == nil { return }
         let collectionView = self.collectionView!
@@ -99,13 +166,10 @@ class WJStackCellLayout: UICollectionViewLayout {
         self.itemAttributes.removeAll(keepCapacity: true)
         self.headerAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: WJStackCellLayoutHeader, withIndexPath: NSIndexPath(forItem: 0, inSection: 0))
         self.headerAttributes.frame = CGRect(x: 0, y: 0, width: collectionView.bounds.size.width, height: self.headerHeight)
-        self.columnHeights = [CGFloat](count: self.columnCount, repeatedValue: self.headerHeight + self.sectionInset.top)
-        
-        let numberOfSections = collectionView.numberOfSections()
-        let width = collectionView.bounds.size.width - self.sectionInset.left - self.sectionInset.right
-        let itemWidth = floor((width - (CGFloat(self.columnCount - 1) * self.sectionSpacing)) / CGFloat(self.columnCount))
+        self.columnHeights = [CGFloat](count: self.columnCount, repeatedValue: self.headerHeight + self.contentInset.top)
         
         var top:CGFloat = 0
+        let numberOfSections = collectionView.numberOfSections()
         for var section = 0; section < numberOfSections; section++ {
             self.itemAttributes.append([])
             
@@ -116,7 +180,7 @@ class WJStackCellLayout: UICollectionViewLayout {
                 let indexPath = NSIndexPath(forItem: item, inSection: section)
                 
                 let itemHeight = delegate.collectionView(collectionView, layout: self, heightForItemAtIndexPath: indexPath)
-                let xOffset = self.sectionInset.left + (itemWidth+self.sectionSpacing) * CGFloat(columnIndex)
+                let xOffset = xOffsets[columnIndex]
                 let yOffset = self.columnHeights[columnIndex]
                 
                 let verticalAdjustment: CGFloat
@@ -132,7 +196,7 @@ class WJStackCellLayout: UICollectionViewLayout {
                 self.itemAttributes[section].append(attributes)
                 self.columnHeights[columnIndex] += verticalAdjustment
             }
-            self.columnHeights[columnIndex] += self.sectionInset.bottom
+            self.columnHeights[columnIndex] += self.contentInset.bottom
         }
     }
     
