@@ -16,13 +16,17 @@ class ViewController: UICollectionViewController {
     var colors = [cellInfo(color: UIColor.redColor(), text: "Cell 1"), cellInfo(color: UIColor.blueColor(), text: "Cell 2"), cellInfo(color: UIColor.greenColor(), text: "Cell 3"), cellInfo(color: UIColor.orangeColor(), text: "Cell 4"), cellInfo(color: UIColor.purpleColor(), text: "Cell 5"), cellInfo(color: UIColor.cyanColor(), text: "Cell 6"), cellInfo(color: UIColor.lightGrayColor(), text: "Cell 7")]
     
     var cells:[[cellInfo]] = []
+    var expandedCell:[Int] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.cells = [self.colors, self.colors, self.colors, self.colors];
+        for cell in self.cells {
+            //Start with bottom cell expanded
+            self.expandedCell.append(cell.count-1)
+        }
         
-        self.collectionView?.draggable = true
         self.collectionView?.registerNib(UINib(nibName: "WJHeaderCollectionReusableView", bundle: nil), forSupplementaryViewOfKind: WJStackCellLayoutHeader, withReuseIdentifier: "Header")
     }
     
@@ -58,22 +62,15 @@ class ViewController: UICollectionViewController {
         layout?.columnCount = numberOfColumns
         layout?.itemWidth = itemWidth
     }
-    
-    func moveItemAtIndexPath(fromIndexPath:NSIndexPath, toIndexPath:NSIndexPath) {
-        let fromIndex = fromIndexPath.item
-        let toIndex = toIndexPath.item
-        let movingObject = self.cells[fromIndexPath.section][fromIndex];
-        
-        self.cells[fromIndexPath.section].removeAtIndex(fromIndex)
-        self.cells[toIndexPath.section].insert(movingObject, atIndex: toIndex)
-        
-        self.collectionView?.moveItemAtIndexPath(fromIndexPath, toIndexPath: toIndexPath)
-    }
 }
 
 extension ViewController: WJCollectionViewDelegateStackLayout {
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, heightForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 100
+        if indexPath.item == 3 {
+            return 200
+        } else {
+            return 100
+        }
     }
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, verticalOffsetForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat {
@@ -81,14 +78,16 @@ extension ViewController: WJCollectionViewDelegateStackLayout {
     }
     
     override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        let numberOfItemsInSection = self.cells[indexPath.section].count
-        if numberOfItemsInSection != indexPath.item {
-            //update to move selected cell to bottom
-            self.moveItemAtIndexPath(indexPath, toIndexPath: NSIndexPath(forItem: numberOfItemsInSection-1, inSection: indexPath.section))
-            return
+        if self.expandedCell[indexPath.section] != indexPath.item {
+            self.expandedCell[indexPath.section] = indexPath.item
+            collectionView.performBatchUpdates(nil, completion: nil)
         } else {
-            //bottom cell selected, perform navigation
+            //expanded cell selected, perform navigation
         }
+    }
+    
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: WJStackCellLayout, expandedItemInSection section: Int) -> Int {
+        return self.expandedCell[section]
     }
 }
 
@@ -112,20 +111,5 @@ extension ViewController: UICollectionViewDataSource {
     
     override func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
         return collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "Header", forIndexPath: indexPath) as! UICollectionReusableView
-    }
-}
-
-extension ViewController: UICollectionViewDataSource_Draggable {
-    func collectionView(collectionView: UICollectionView, moveItemAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-        self.moveItemAtIndexPath(fromIndexPath, toIndexPath: toIndexPath)
-    }
-    
-    func collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: NSIndexPath) -> Bool {
-        return true
-    }
-    
-    func collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: NSIndexPath, toIndexPath: NSIndexPath) -> Bool {
-        //items must stay in the same section
-        return indexPath.section == toIndexPath.section
     }
 }
