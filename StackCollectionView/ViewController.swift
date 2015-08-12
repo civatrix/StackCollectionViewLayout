@@ -21,13 +21,14 @@ class ViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.cells = [self.colors, self.colors, self.colors, self.colors];
+        self.cells = [self.colors, self.colors, self.colors, self.colors]
         for cell in self.cells {
             //Start with bottom cell expanded
             self.expandedCell.append(cell.count-1)
         }
         
         self.collectionView?.registerNib(UINib(nibName: "WJHeaderCollectionReusableView", bundle: nil), forSupplementaryViewOfKind: WJStackCellLayoutHeader, withReuseIdentifier: "Header")
+        self.collectionView?.registerClass(UICollectionReusableView.self, forSupplementaryViewOfKind: WJStackCellLayoutSectionMask, withReuseIdentifier: "Mask")
     }
     
     override func viewWillLayoutSubviews() {
@@ -110,6 +111,12 @@ extension ViewController: UICollectionViewDataSource {
     }
     
     override func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
-        return collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "Header", forIndexPath: indexPath) as! UICollectionReusableView
+        if kind == WJStackCellLayoutSectionMask {
+            let cell = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "Mask", forIndexPath: indexPath) as! UICollectionReusableView
+            cell.backgroundColor = collectionView.backgroundColor
+            return cell
+        } else {
+            return collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "Header", forIndexPath: indexPath) as! UICollectionReusableView
+        }
     }
 }

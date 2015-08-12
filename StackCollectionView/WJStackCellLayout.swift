@@ -15,6 +15,7 @@ protocol WJCollectionViewDelegateStackLayout: NSObjectProtocol {
 }
 
 let WJStackCellLayoutHeader = "WJStackCellLayoutHeader"
+let WJStackCellLayoutSectionMask = "WJStackCellLayoutMask"
 
 class WJStackCellLayout: UICollectionViewLayout {
     var columnCount = 1 {
@@ -66,6 +67,7 @@ class WJStackCellLayout: UICollectionViewLayout {
     private var itemAttributes:[[UICollectionViewLayoutAttributes]] = []
     private var columnHeights:[CGFloat] = []
     private var headerAttributes = UICollectionViewLayoutAttributes()
+    private var maskAttributes:[UICollectionViewLayoutAttributes] = []
 
     override func collectionViewContentSize() -> CGSize {
         let height = self.columnHeights.reduce(CGFloat.min, combine: { max($0, $1) })
@@ -76,6 +78,7 @@ class WJStackCellLayout: UICollectionViewLayout {
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [AnyObject]? {
         var attributes = self.itemAttributes.flatMap({ $0 })
         attributes.insert(self.headerAttributes, atIndex: 0)
+        attributes.splice(self.maskAttributes, atIndex: 0)
         return attributes
     }
     
@@ -88,7 +91,11 @@ class WJStackCellLayout: UICollectionViewLayout {
     }
     
     override func layoutAttributesForSupplementaryViewOfKind(elementKind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes! {
-        return self.headerAttributes
+        if elementKind == WJStackCellLayoutSectionMask {
+            return self.maskAttributes[indexPath.section]
+        } else {
+            return self.headerAttributes
+        }
     }
     
     override func prepareLayout() {
@@ -143,6 +150,7 @@ class WJStackCellLayout: UICollectionViewLayout {
         xOffsets = xOffsets.map { $0 + self.contentInset.left }
         
         self.itemAttributes.removeAll(keepCapacity: true)
+        self.maskAttributes.removeAll(keepCapacity: true)
         self.headerAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: WJStackCellLayoutHeader, withIndexPath: NSIndexPath(forItem: 0, inSection: 0))
         self.headerAttributes.frame = CGRect(x: 0, y: 0, width: collectionView.bounds.size.width, height: self.headerHeight)
         self.columnHeights = [CGFloat](count: self.columnCount, repeatedValue: self.headerHeight + self.contentInset.top)
@@ -154,13 +162,15 @@ class WJStackCellLayout: UICollectionViewLayout {
             
             let numberOfItems = collectionView.numberOfItemsInSection(section)
             let expandedItem = delegate.collectionView(collectionView, layout: self, expandedItemInSection: section)
-
+            
             let columnIndex = self.shortestColumn()
+            let xOffset = xOffsets[columnIndex]
+            
+            var sectionBottom:CGFloat = 0
             for var item = 0; item < numberOfItems; item++ {
                 let indexPath = NSIndexPath(forItem: item, inSection: section)
                 
                 let itemHeight = delegate.collectionView(collectionView, layout: self, heightForItemAtIndexPath: indexPath)
-                let xOffset = xOffsets[columnIndex]
                 let yOffset = self.columnHeights[columnIndex]
                 
                 let verticalAdjustment: CGFloat
@@ -169,13 +179,21 @@ class WJStackCellLayout: UICollectionViewLayout {
                 } else {
                     verticalAdjustment = delegate.collectionView(collectionView, layout: self, verticalOffsetForItemAtIndexPath: indexPath)
                 }
+                
                 let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
-                attributes.frame = CGRect(x: xOffset, y: yOffset, width: itemWidth, height: verticalAdjustment)
-                attributes.zIndex = item
+                attributes.frame = CGRect(x: xOffset, y: yOffset, width: itemWidth, height: itemHeight)
+                attributes.zIndex = (section*10)+item
+                
+                sectionBottom = max(yOffset+itemHeight, sectionBottom)
                 
                 self.itemAttributes[section].append(attributes)
                 self.columnHeights[columnIndex] += verticalAdjustment
             }
+            var maskAttribute = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: WJStackCellLayoutSectionMask, withIndexPath: NSIndexPath(forItem: 0, inSection: section))
+            let yOffset = self.columnHeights[columnIndex]
+            maskAttribute.frame = CGRect(x: xOffset, y: yOffset, width: itemWidth, height: sectionBottom - yOffset)
+            maskAttribute.zIndex = (section*10)+numberOfItems
+            self.maskAttributes.append(maskAttribute)
             self.columnHeights[columnIndex] += self.contentInset.bottom
         }
     }
