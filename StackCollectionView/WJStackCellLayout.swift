@@ -66,6 +66,7 @@ class WJStackCellLayout: UICollectionViewLayout {
     
     private var itemAttributes:[[UICollectionViewLayoutAttributes]] = []
     private var columnHeights:[CGFloat] = []
+    private var sectionColumns:[Int:Int] = [:]
     private var headerAttributes = UICollectionViewLayoutAttributes()
     private var maskAttributes:[UICollectionViewLayoutAttributes] = []
 
@@ -163,7 +164,7 @@ class WJStackCellLayout: UICollectionViewLayout {
             let numberOfItems = collectionView.numberOfItemsInSection(section)
             let expandedItem = delegate.collectionView(collectionView, layout: self, expandedItemInSection: section)
             
-            let columnIndex = self.shortestColumn()
+            let columnIndex = self.columnForSection(section)
             let xOffset = xOffsets[columnIndex]
             
             var sectionBottom:CGFloat = 0
@@ -207,7 +208,21 @@ class WJStackCellLayout: UICollectionViewLayout {
                 shortestIndex = index
             }
         }
-        
+
         return shortestIndex
+    }
+
+    private func columnForSection(section: Int) -> Int {
+        if let column = self.sectionColumns[section] where column != -1{
+            return column
+        } else {
+            let column = self.shortestColumn()
+            self.sectionColumns[section] = column
+            return column
+        }
+    }
+    
+    func resetColumns() {
+        self.sectionColumns.removeAll(keepCapacity: false)
     }
 }
